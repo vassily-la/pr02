@@ -26,11 +26,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # DEBUG = True
 #
 # ALLOWED_HOSTS = ['*']
-if DJANGO_DEBUG_FALSE in os.environ:
+
+if 'DJANGO_DEBUG_FALSE' in os.environ:
+    print('some env values')
     DEBUG = False
     SECRET_KEY = o.environ['DJANGO_SECRET_KEY']
     ALLOWED_HOSTS = [os.environ['SITENAME']]
 else:
+    print('default')
     DEBUG = True
     SECRET_KEY = 'insecure-key-for-dev'
     ALLOWED_HOSTS = []
