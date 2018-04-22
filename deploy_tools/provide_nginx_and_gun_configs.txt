@@ -1,0 +1,35 @@
+CH11 - PROVIDE NGINX AND GUNI CONFIGS
+###################################################
+### PROVIDE NGINX CONFIGS
+cat nginx* \
+ | sed "s/DOMAIN/new_domain/g" \
+ | sudo tee /etc/nginx/sites-available/new_domain
+
+vldo@u-ocean:~/sites/live.vassily.pro/deploy_tools$ cat nginx* \
+> | sed "s/DOMAIN/live.vassily.pro/g" \
+> | sudo tee /etc/nginx/sites-available/live.vassily.pro
+vldo@u-ocean:~/sites/live.vassily.pro/deploy_tools$ cat nginx* \
+> | sed "s/DOMAIN/st01.vassily.pro/g" \
+> | sudo tee /etc/nginx/sites-available/st01.vassily.pro
+##################################################
+### CREATE SYMLINKS
+sudo ln -s /etc/nginx/sites-available/NEW_DOMAIN /etc/nginx/sites-enabled/NEW_DOMAIN
+================
+sudo ln -s /etc/nginx/sites-available/live.vassily.pro /etc/nginx/sites-enabled/live.vassily.pro
+sudo ln -s /etc/nginx/sites-available/st01.vassily.pro /etc/nginx/sites-enabled/st01.vassily.pro
+###################################################
+### CREATE GUNI CONFIGS FOR SYSTEMD
+cat ./deploy_tools/gunicorn-systemd.template.service \
+    | sed "s/DOMAIN/st01.vassily.pro/g" \
+    | sudo tee /etc/systemd/system/gunicorn-st01.vassily.pro.service
+cat ./deploy_tools/gunicorn-systemd.template.service \
+    | sed "s/DOMAIN/live.vassily.pro/g" \
+    | sudo tee /etc/systemd/system/gunicorn-live.vassily.pro.service
+###################################################
+### APPLY EVERYTHING
+sudo systemctl daemon-reload
+sudo systemctl reload nginx
+sudo systemctl enable gunicorn-st01.vassily.pro
+sudo systemctl start gunicorn-st01.vassily.pro
+sudo systemctl enable gunicorn-live.vassily.pro
+sudo systemctl start gunicorn-live.vassily.pro
